@@ -7,6 +7,7 @@ use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -21,7 +22,7 @@ class UserController extends Controller
 
     public function create()
     {
-       return view('users.create');
+        return view('users.create');
     }
 
 
@@ -34,7 +35,9 @@ class UserController extends Controller
             'patronymic' => $request['patronymic'],
             'email' => $request['email'],
             'password' => Hash::make($request['password']),
+            'role' => $request['role'],
         ]);
+
         return redirect()->route('users.index')->with('message', 'Пользователь успешно создан!');
     }
 
@@ -51,22 +54,35 @@ class UserController extends Controller
     }
 
 
-    public function update(UserUpdateRequest $request, User $user)
+    public function update(Request $request, $id)
     {
-        $user->update([
-            'username' => $request['username'],
-            'surname' => $request['surname'],
-            'name' => $request['name'],
-            'patronymic' => $request['patronymic'],
-            'email' => $request['email'],
+        $this->validate($request, [
+            'username' => 'required',
+            'surname' => 'required',
+            'name' => 'required',
+            'patronymic' => 'required',
+            'email' => 'required|email|unique:users,email,'.$id,
+            'password' => 'same:password_confirmation',
+            'role' => 'required'
         ]);
+
+        $input = $request->all();
+        if(!empty($input['password'])){
+            $input['password'] = Hash::make($input['password']);
+        }else{
+            $input = Arr::except($input,array('password'));
+        }
+
+        $user = User::find($id);
+        $user->update($input);
+
         return redirect()->route('users.index')->with('message', 'Пользователь успешно обновлен!');
     }
 
 
     public function destroy(User $user)
     {
-        if(auth()->user()->id == $user->id){
+        if (auth()->user()->id == $user->id) {
             return redirect()->route('users.index')->with('message', 'Вы удаляете себя. Осторожней!');
         }
         $user->delete();

@@ -2,7 +2,7 @@
 
 @section('content')
 
-
+<body>
     <div class="container-fluid">
 
         <!-- Page Heading -->
@@ -21,20 +21,9 @@
             <div class="card-header">
                 <form class="row">
                     <div class="col">
-                        <label class="visually-hidden" for="autoSizingInput">Name</label>
-                        <input type="search" name="search" class="form-control" id="autoSizingInput" placeholder="Jane Doe">
-                    </div>
-                    <div class="col">
-                        <label class="visually-hidden" for="autoSizingSelect">Preference</label>
-                        <select class="form-select" id="autoSizingSelect">
-                            <option selected>Choose...</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <button type="submit" class="btn btn-primary">search</button>
+
+                        <a href="#" class="btn btn-primary mb-2 float-right" data-toggle="modal"
+                           data-target="#ModalCreate">Create</a>
                     </div>
                 </form>
             </div>
@@ -55,12 +44,14 @@
                         <th scope="row">{{$user->id}}</th>
                         <td>{{$user->username}}</td>
                         <td>{{$user->email}}</td>
-                        <td><a href="{{route('users.edit', $user->id)}}" class="btn btn-success">Редактировать</a></td>
+                        <td><a href="#" data-toggle="modal" data-target="#ModalEdit{{$user->id}}" class="btn btn-success">Редактировать</a></td>
                     </tr>
+                    @include('users.modal.create')
+                    @include('users.modal.edit')
                 @endforeach
                 </tbody>
             </table>
         </div>
     </div>
-
+</body>
 @endsection

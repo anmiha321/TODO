@@ -3,6 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\Backend\UserController;
 use \App\Http\Controllers\Backend\TaskController;
+use  \Illuminate\Auth\Access\Gate;
+use \Illuminate\Support\Facades\Auth;
+use \App\Http\Controllers\Auth\LoginController;
+use \App\Http\Controllers\Auth\RegisterController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,12 +20,13 @@ use \App\Http\Controllers\Backend\TaskController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::resource('users', UserController::class);
+Route::get('/home', [TaskController::class, 'index'])->name('home');
+Route::middleware(['auth', 'isAdmin'])->group(function () {
+    Route::resource('users', UserController::class);
+});
 Route::resource('tasks', TaskController::class);
-
